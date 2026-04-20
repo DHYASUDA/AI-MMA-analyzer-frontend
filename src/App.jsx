@@ -1,16 +1,22 @@
 import { useState } from 'react'
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import './App.css'
 import SignUp from './SignUp';
+import Login from './Login';
+import Home from './Home';
 
 function App() {
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
   const[formData, setFormData] = useState({
     userName: '',
     password: ''
   });
-
+  
+  const handleLoginSuccess = (userData) => {
+    setUser(userData);
+};
   const handleChange = (e) => {
     setFormData({
      ...formData,                    
@@ -20,7 +26,8 @@ function App() {
 
   
 const handleSubmit = async (e) => {
-  e.preventDefault();
+  e.preventDefault();//prevents reload when submit
+  
 
   try {
     const response = await axios.post('/api/submit', formData);
@@ -34,6 +41,10 @@ const goToSignUp = () => {
   navigate('/signup')
 }
 
+const goToLogin = () => {
+  navigate('/login')
+}
+
 
   return (
     
@@ -43,40 +54,29 @@ const goToSignUp = () => {
       <div>
            
         <h1>Kalshi AI weather predictor </h1>
-        <h2>Login</h2>
+        
       </div>
       <Routes>
       <Route
         path="/"
         element={
-          <>
-            <form onSubmit={handleSubmit}>
-              <input
-                type="text"
-                name="userName"
-                placeholder="enter username"
-                value={formData.userName}
-                onChange={handleChange}
-              />
-              <br />
-              <input
-                type="password"
-                name="password"
-                placeholder="enter Password"
-                value={formData.password}
-                onChange={handleChange}
-              />
-              <br />
-              <button type="submit">Login</button>
-            </form>
-            <div>
+          <div>
+            
+              <button onClick={goToLogin}>Login</button>
               <button onClick={goToSignUp}>Sign up</button>
             </div>
-          </>
+          
         }
       />
       
         <Route path="/signup" element={<SignUp />} />
+        <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />}  />
+        <Route 
+          path="/home" 
+          element={
+            user ? <Home user={user} /> : <Navigate to="/login" replace />
+          } 
+        />
       </Routes>
     </div>
   )
