@@ -7,14 +7,16 @@ function Login( {onLoginSuccess}){
     const [user, setUser] = useState(null);
 
     const [formData, setFormData] = useState({
+        userName:'',
         email:'',
         password:''
     });
 
-   
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
 
 
-    const handleChange = (e) => {
+    const handleChange =  (e) => {
         const { name, value } = e.target;
         
         setFormData(prevState => ({
@@ -23,26 +25,46 @@ function Login( {onLoginSuccess}){
         }));
     };
 
-     const handleSubmit = (e) => {
+     const handleSubmit = async (e) => {
         e.preventDefault();
         const payload ={
             email: formData.email.trim(),
             password: formData.password
         }
-        
-        fetch('http://localhost:8080/api/login', {
+        try{
+        const response = await fetch('http://localhost:8080/api/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         })
-        alert("login payload created successfully! Check console.");
+        const data = await response.json();
+
+
+        if(!response.ok){
+            alert("Failed to login");
+            throw new Error('Login failed');
+        } else {
+            console.log(data);
+            alert("login payload created successfully! Check console.");
         onLoginSuccess({
-            email: formData.email
+            id: data.id,
+            email: data.email,
+            password: data.password,
+            userName: data.userName
         });
-        
         console.log(payload);
+        navigate('/home');
+        }
+        
+        
+    } catch(error){
+        setError(error.message || 'Something went wrong');
+        console.error(error);
+    }
     
      }
+
+
      const goToSignUp = () => {
         navigate('/signUp')
       }

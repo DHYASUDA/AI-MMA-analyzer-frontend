@@ -1,13 +1,15 @@
 import { useState } from 'react'
-
+import { useNavigate } from 'react-router-dom';
 function SignUp(){
-
+    const Navigate = useNavigate();
     const [formData, setFormData] = useState({
         email: '',
         username: '',
         password: '',
         confirmPassword: ''
     });
+
+    const [error, setError] = useState("");
 
 
     //handle change (being able to edit fields)
@@ -35,7 +37,7 @@ function SignUp(){
 
 
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();     // Prevent page refresh
 
         // Simple validation
@@ -63,12 +65,20 @@ function SignUp(){
         // For debugging - see what we are sending
         console.log("Signup Payload:", payload);
 
+        try{
+
+            const response = await fetch('http://localhost:8080/api/signUp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+
+            alert("Success")
+            Navigate('/login');
+        } catch(error){
+            setError(error.message || "Something went wrong");
+        }
         
-        fetch('http://localhost:8080/api/signUp', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        })
 
         
     };
