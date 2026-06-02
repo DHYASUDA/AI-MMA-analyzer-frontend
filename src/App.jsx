@@ -5,6 +5,7 @@ import './App.css'
 import SignUp from './SignUp';
 import Login from './Login';
 import Home from './Home';
+import UpcomingFights from './UpcomingFights'
 
 function App() {
   const navigate = useNavigate();
@@ -53,7 +54,7 @@ const goToLogin = () => {
         
       <div>
            
-        <h1>Kalshi AI weather predictor </h1>
+        
         
       </div>
       <Routes>
@@ -75,6 +76,12 @@ const goToLogin = () => {
           path="/home" 
           element={
             user ? <Home user={user} /> : <Navigate to="/login" replace />
+          } 
+        />
+        <Route 
+          path="/upcomingfights" 
+          element={
+            user ? <UpcomingFights user={user} /> : <Navigate to="./UpcomingFights" replace />
           } 
         />
       </Routes>
