@@ -61,9 +61,8 @@ function Home({ user }) {
             <div className="sideBar">
                 <div className="sidebar-item">Home</div>
                 <Link to="/upcomingfights" className="sidebar-item">Events</Link>
-                <div className="sidebar-item">Fighter Analyser</div>
+                <Link to="/fightAnalyzer" className="sidebar-item">Fighter Analyzer</Link>
                 <div className="sidebar-item">Head to Head</div>
-                <div className="sidebar-item">Betting Guides</div>
                 <div className="sidebar-item logout">Logout</div>
             </div>
 

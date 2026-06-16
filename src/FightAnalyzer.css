@@ -1,0 +1,346 @@
+.analyzer-wrap {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #111;
+}
+
+.analyzer-content {
+    flex: 1;
+    padding: 40px 32px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.search-box {
+    position: relative;
+    max-width: 480px;
+    margin-bottom: 6px;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 12px 14px 12px 42px;
+    font-size: 15px;
+    border-radius: 10px;
+    border: 1px solid #2e2e2e;
+    background: #1a1a1a;
+    color: white;
+    outline: none;
+}
+
+.search-box input:focus {
+    border-color: #cc0000;
+    box-shadow: 0 0 0 3px rgba(204,0,0,0.12);
+}
+
+.search-box input::placeholder { color: #555; }
+
+.search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #555;
+    font-size: 18px;
+    pointer-events: none;
+}
+
+.search-hint {
+    font-size: 12px;
+    color: #555;
+    margin-bottom: 6px;
+    padding-left: 4px;
+}
+
+.dropdown {
+    max-width: 480px;
+    background: #1a1a1a;
+    border: 1px solid #2e2e2e;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.fighter-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    cursor: pointer;
+    border-bottom: 1px solid #222;
+    transition: background 0.15s;
+}
+
+.fighter-row:last-child { border-bottom: none; }
+.fighter-row:hover { background: #222; }
+
+.avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #2a1a1a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: #cc0000;
+    flex-shrink: 0;
+}
+
+.fighter-info .name {
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+}
+
+.fighter-info .nickname {
+    font-size: 12px;
+    color: #777;
+}
+
+.selected-card {
+    background: #1a1a1a;
+    border: 1px solid #2e2e2e;
+    border-radius: 10px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 4px;
+}
+
+.selected-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #2a1a1a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 700;
+    color: #cc0000;
+    flex-shrink: 0;
+}
+
+.selected-info .name {
+    font-size: 16px;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 2px;
+}
+
+.selected-info .nickname {
+    font-size: 13px;
+    color: #777;
+    margin: 0;
+}
+
+.section-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #cc0000;
+    font-weight: 700;
+    margin: 20px 0 8px;
+}
+
+.stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1px;
+    background: #2e2e2e;
+    border: 1px solid #2e2e2e;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 12px;
+}
+
+.stat-item {
+    background: #1a1a1a;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.stat-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #666;
+}
+
+.stat-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+}
+
+.stat-value.green { color: #4caf50; }
+.stat-value.red   { color: #cc0000; }
+
+/* ── Two-column layout ── */
+.fighter-overview-layout {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    flex: 1;
+    min-height: 0;
+    margin-top: 20px;
+    overflow: hidden;
+}
+
+/* Stats card — fixed width, scrolls independently */
+.fighter-overview-layout .stats-card {
+    flex: 0 0 420px;
+    height: 100%;
+    overflow-y: auto;
+    box-sizing: border-box;
+    scrollbar-width: thin;
+    scrollbar-color: #2e2e2e transparent;
+}
+
+.fighter-overview-layout .stats-card::-webkit-scrollbar {
+    width: 5px;
+}
+.fighter-overview-layout .stats-card::-webkit-scrollbar-thumb {
+    background: #2e2e2e;
+    border-radius: 4px;
+}
+.fighter-overview-layout .stats-card::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* ── AI Overview Card ── */
+.ai-overview-card {
+    flex: 1;
+    height: 100%;
+    overflow-y: auto;
+    box-sizing: border-box;
+    background: #1a1a2e;
+    border: 1px solid #2a2a4a;
+    border-radius: 12px;
+    padding: 20px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    scrollbar-width: thin;
+    scrollbar-color: #2a2a4a transparent;
+}
+
+.ai-overview-card::-webkit-scrollbar {
+    width: 5px;
+}
+.ai-overview-card::-webkit-scrollbar-thumb {
+    background: #2a2a4a;
+    border-radius: 4px;
+}
+.ai-overview-card::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.ai-overview-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid #2a2a4a;
+    padding-bottom: 12px;
+}
+
+.ai-overview-badge {
+    background: linear-gradient(135deg, #e63946, #c1121f);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.ai-overview-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #c9d1d9;
+    letter-spacing: 0.4px;
+}
+
+.ai-overview-loading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #8b949e;
+    font-size: 14px;
+    padding: 12px 0;
+}
+
+.ai-spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #2a2a4a;
+    border-top-color: #e63946;
+    border-radius: 50%;
+    flex-shrink: 0;
+    animation: ai-spin 0.75s linear infinite;
+}
+
+@keyframes ai-spin {
+    to { transform: rotate(360deg); }
+}
+
+.ai-overview-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.ai-overview-body p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: #c9d1d9;
+    margin: 0;
+}
+
+.ai-overview-body p:first-child {
+    color: #e6edf3;
+    font-size: 14.5px;
+}
+
+.ai-overview-empty {
+    font-size: 13px;
+    color: #8b949e;
+    margin: 0;
+    padding: 8px 0;
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+    .analyzer-wrap {
+        height: auto;
+        overflow: visible;
+    }
+
+    .analyzer-content {
+        overflow: visible;
+    }
+
+    .fighter-overview-layout {
+        flex-direction: column;
+        flex: unset;
+        overflow: visible;
+        margin-top: 20px;
+    }
+
+    .fighter-overview-layout .stats-card,
+    .ai-overview-card {
+        flex: unset;
+        width: 100%;
+        height: auto;
+        overflow-y: visible;
+    }
+}

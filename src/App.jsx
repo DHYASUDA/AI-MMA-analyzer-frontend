@@ -6,6 +6,7 @@ import SignUp from './SignUp';
 import Login from './Login';
 import Home from './Home';
 import UpcomingFights from './UpcomingFights'
+import FightAnalyzer from './FightAnalyzer'
 
 function App() {
   const navigate = useNavigate();
@@ -84,6 +85,13 @@ const goToLogin = () => {
             user ? <UpcomingFights user={user} /> : <Navigate to="./UpcomingFights" replace />
           } 
         />
+
+<Route 
+  path="/fightAnalyzer" 
+  element={
+    user ? <FightAnalyzer user={user} /> : <Navigate to="/login" replace />
+  } 
+/>
       </Routes>
     </div>
   )
