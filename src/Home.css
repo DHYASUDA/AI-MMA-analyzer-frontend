@@ -1,46 +1,114 @@
+/* ── Base ── */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
 /* ── Layout ── */
 .chat-container {
     display: flex;
     flex-direction: row;
     height: 100vh;
-    background-color: #16171d;
+    background-color: #111;
     color: white;
+    font-family: 'ESPN', 'Helvetica Neue', Arial, sans-serif;
 }
 
 /* ── Sidebar ── */
 .sideBar {
-    width: 200px;
+    width: 230px;
     min-height: 100vh;
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    padding: 24px 16px;
-    background-color: #1a1a2e;
+    padding: 0;
+    background-color: #2626e6;
     border-right: 1px solid #2e2e45;
 }
 
+/* brand / logo header */
+.sidebar-brand {
+    padding: 22px 20px;
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: white;
+    border-bottom: 1px solid #2e2e45;
+    position: relative;
+}
+
+/* red accent strip under the brand, echoing the events red-line */
+.sidebar-brand::after {
+    content: "";
+    position: absolute;
+    left: 20px;
+    bottom: -2px;
+    width: 36px;
+    height: 3px;
+    background-color: #cc0000;
+}
+
+/* small grouping label */
+.sidebar-label {
+    padding: 18px 20px 8px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #5a5a72;
+}
+
+/* nav items wrapper so logout can sit at the bottom */
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 0 12px;
+    flex: 1;
+}
+
 .sidebar-item {
-    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 0.95rem;
-    color: #ccc;
-    transition: background-color 0.2s;
+    font-size: 0.92rem;
+    color: #b8b8c8;
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    transition: background-color 0.15s, color 0.15s, border-color 0.15s;
 }
 
 .sidebar-item:hover {
-    background-color: #2e2e45;
+    background-color: #232340;
     color: white;
 }
 
+/* current page */
+.sidebar-item.active {
+    background-color: #232340;
+    color: white;
+    border-left-color: #cc0000;
+}
+
+/* icon slot — works with an emoji, svg, or <span> */
+.sidebar-item .icon {
+    width: 18px;
+    text-align: center;
+    font-size: 1rem;
+    opacity: 0.85;
+}
+
+/* logout pinned to the bottom */
 .sidebar-item.logout {
-    margin-top: auto;
+    margin: 0 12px 20px;
     color: #e05c5c;
+    border-left: 3px solid transparent;
 }
 
 .sidebar-item.logout:hover {
     background-color: #3a1f1f;
+    color: #ff7a7a;
 }
 
 /* ── Main Content ── */
@@ -49,13 +117,19 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    padding: 20px;
+    padding: 24px 28px;
 }
 
+/* greeting styled like the ESPN section header */
 .greeting {
-    margin: 0 0 16px 0;
-    font-size: 1.2rem;
-    color: #ccc;
+    margin: 0 0 20px 0;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: white;
+    padding-bottom: 12px;
+    border-bottom: 3px solid #cc0000;
 }
 
 /* ── Chat Messages ── */
@@ -63,36 +137,81 @@
     flex: 1;
     overflow-y: auto;
     padding: 20px;
-    background-color: #1e1f27;
+    background-color: #1a1a1a;
+    border: 1px solid #2e2e2e;
     border-radius: 8px;
     margin-bottom: 16px;
 }
 
 .message {
-    margin-bottom: 15px;
-    padding: 12px;
+    margin-bottom: 14px;
+    padding: 12px 14px;
     border-radius: 8px;
+    line-height: 1.45;
+    max-width: 78%;
 }
 
+.message strong {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    opacity: 0.8;
+}
+
+.message p {
+    font-size: 0.95rem;
+}
+
+/* user → red accent, right aligned */
 .message.user {
-    background-color: #007bff;
+    background-color: #cc0000;
     color: white;
-    margin-left: 20%;
+    margin-left: auto;
+    border: 1px solid #e02020;
 }
 
+/* ai → dark card, left aligned */
 .message.ai {
-    background-color: #5e6b79;
+    background-color: #222;
+    color: #eee;
+    margin-right: auto;
+    border: 1px solid #2e2e2e;
+}
+
+/* ── Welcome Message ── */
+.welcome-message {
+    text-align: center;
+    margin-top: 80px;
+    color: #888;
+}
+
+.welcome-message h2 {
     color: white;
-    margin-right: 20%;
+    font-size: 1rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.welcome-message p {
+    font-size: 0.9rem;
+    color: #777;
 }
 
 /* ── Input Area ── */
+.chat-input-area {
+    flex-shrink: 0;
+}
+
 .input-wrapper {
     display: flex;
     gap: 10px;
     padding: 10px;
-    background-color: #2a2b35;
-    border-top: 1px solid #3a3b4a;
+    background-color: #1a1a1a;
+    border: 1px solid #2e2e2e;
     border-radius: 8px;
 }
 
@@ -100,40 +219,53 @@
     flex: 1;
     padding: 14px;
     font-size: 1rem;
-    border: 1px solid #3a3b4a;
-    border-radius: 8px;
-    background-color: #16171d;
+    border: 1px solid #444;
+    border-radius: 6px;
+    background-color: #111;
     color: white;
     outline: none;
+    transition: border-color 0.2s;
+}
+
+.input-wrapper input::placeholder {
+    color: #666;
 }
 
 .input-wrapper input:focus {
-    border-color: #007bff;
+    border-color: #cc0000;
 }
 
 .input-wrapper button {
-    padding: 0 24px;
-    background-color: #007bff;
+    padding: 0 28px;
+    background-color: #cc0000;
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
     transition: background-color 0.2s;
 }
 
 .input-wrapper button:hover:not(:disabled) {
-    background-color: #0056d6;
+    background-color: #e02020;
 }
 
 .input-wrapper button:disabled {
-    background-color: #55626d;
+    background-color: #3a1f1f;
+    color: #888;
     cursor: not-allowed;
 }
 
-/* ── Welcome Message ── */
-.welcome-message {
-    text-align: center;
-    margin-top: 50px;
-    color: #666;
+.message ol,
+.message ul {
+    padding-left: 1.5rem;
+    margin: 0.5rem 0;
+    list-style-position: outside;
+}
+
+.message li {
+    margin-bottom: 0.5rem;
 }

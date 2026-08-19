@@ -1,97 +1,94 @@
-import { useState } from 'react'
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import SignUp from './SignUp';
-function Login( {onLoginSuccess}){
+import { apiUrl } from './config';
+
+function Login({ onLoginSuccess }) {
     const navigate = useNavigate();
 
-    const [user, setUser] = useState(null);
-
     const [formData, setFormData] = useState({
-        userName:'',
-        email:'',
-        password:''
+        email: '',
+        password: '',
     });
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
-
-    const handleChange =  (e) => {
+    const handleChange = (e) => {
         const { name, value } = e.target;
-        
-        setFormData(prevState => ({
-            ...prevState,        // keep previous values
-            [name]: value        // update the changed field
-        }));
+        setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-     const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        const payload ={
+        setLoading(true);
+        setError('');
+
+        const payload = {
             email: formData.email.trim(),
-            password: formData.password
+            password: formData.password,
+        };
+
+        try {
+            const response = await fetch(apiUrl('/api/login'), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Invalid email or password');
+            }
+
+            onLoginSuccess({
+                id: data.id,
+                email: data.email,
+                userName: data.userName,
+            });
+            navigate('/home');
+        } catch (err) {
+            setError(err.message || 'Something went wrong');
+        } finally {
+            setLoading(false);
         }
-        try{
-        const response = await fetch('http://localhost:8080/api/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        })
-        const data = await response.json();
-
-
-        if(!response.ok){
-            alert("Failed to login");
-            throw new Error('Login failed');
-        } else {
-            console.log(data);
-            alert("login payload created successfully! Check console.");
-        onLoginSuccess({
-            id: data.id,
-            email: data.email,
-            password: data.password,
-            userName: data.userName
-        });
-        console.log(payload);
-        navigate('/home');
-        }
-        
-        
-    } catch(error){
-        setError(error.message || 'Something went wrong');
-        console.error(error);
-    }
-    
-     }
-
-
-     const goToSignUp = () => {
-        navigate('/signUp')
-      }
+    };
 
     return (
-        <>
-        <div>
+        <div className="auth-page">
             <form onSubmit={handleSubmit}>
-                <label>Email</label>
-                <input  type="email"
+                <h2>Login</h2>
+                <label>
+                    Email
+                    <input
+                        type="email"
                         name="email"
                         value={formData.email}
-                        onChange={handleChange} placeholder="Email"></input>
-                <br></br>
-                <label>Password</label>
-                <input  name ="password" onChange={handleChange}  value={formData.password} type ="password" placeholder="Password"></input>
-                <br></br>
-                <button type="submit">Login</button> 
-                <h3>Or</h3>
-                
+                        onChange={handleChange}
+                        placeholder="Email"
+                        required
+                    />
+                </label>
+                <label>
+                    Password
+                    <input
+                        name="password"
+                        onChange={handleChange}
+                        value={formData.password}
+                        type="password"
+                        placeholder="Password"
+                        required
+                    />
+                </label>
+                {error && <p className="auth-error">{error}</p>}
+                <button type="submit" disabled={loading}>
+                    {loading ? 'Logging in…' : 'Login'}
+                </button>
             </form>
-
-            <button onClick={goToSignUp}>Sign Up</button>
+            <button type="button" className="auth-link" onClick={() => navigate('/signup')}>
+                Create an account
+            </button>
         </div>
-        </>
-        
-    )
+    );
+}
 
-};
 export default Login;

@@ -182,3 +182,103 @@
     border-right-color: var(--border);
   }
 }
+
+.landing {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  background: #111;
+  color: white;
+}
+
+.landing h1 {
+  margin: 0;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.landing-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.landing-actions button,
+.auth-page button[type="submit"] {
+  padding: 12px 24px;
+  background: #cc0000;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.landing-actions button:hover,
+.auth-page button[type="submit"]:hover:not(:disabled) {
+  background: #e02020;
+}
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: #111;
+  color: white;
+  padding: 24px;
+}
+
+.auth-page form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: min(360px, 100%);
+}
+
+.auth-page label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.9rem;
+}
+
+.auth-page input {
+  padding: 12px;
+  border: 1px solid #444;
+  border-radius: 6px;
+  background: #1a1a1a;
+  color: white;
+}
+
+.auth-page h2 {
+  margin: 0 0 8px;
+  text-align: center;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.auth-error {
+  color: #ff7a7a;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.auth-link {
+  background: none;
+  border: none;
+  color: #b8b8c8;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.auth-page button[type="submit"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

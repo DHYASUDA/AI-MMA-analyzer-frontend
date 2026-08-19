@@ -1,17 +1,18 @@
 import { useState, useRef, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
+import Sidebar from './Sidebar';
+import { apiUrl } from './config';
 import './Home.css';
 
-function Home({ user }) {
+function Home({ user, onLogout }) {
     const [promptText, setPromptText] = useState('');
     const [messages, setMessages] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-    const navigate = useNavigate();
 
     const messagesEndRef = useRef(null);
 
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
     const prompt = async () => {
@@ -24,10 +25,10 @@ function Home({ user }) {
         setIsLoading(true);
 
         try {
-            const response = await fetch('http://localhost:8080/ai/chat', {
+            const response = await fetch(apiUrl('/ai/chat'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'text/plain' },
-                body: currentPrompt
+                body: currentPrompt,
             });
 
             if (!response.ok) throw new Error('Failed to get response');
@@ -35,12 +36,10 @@ function Home({ user }) {
             const data = await response.text();
             const aiMessage = { type: 'ai', content: data };
             setMessages(prev => [...prev, aiMessage]);
-
-        } catch (error) {
-            console.error(error);
+        } catch {
             setMessages(prev => [...prev, {
                 type: 'ai',
-                content: "Sorry, something went wrong. Please try again."
+                content: 'Sorry, something went wrong. Please try again.',
             }]);
         } finally {
             setIsLoading(false);
@@ -56,21 +55,11 @@ function Home({ user }) {
 
     return (
         <div className="chat-container">
+            <Sidebar active="home" onLogout={onLogout} />
 
-           
-            <div className="sideBar">
-                <div className="sidebar-item">Home</div>
-                <Link to="/upcomingfights" className="sidebar-item">Events</Link>
-                <Link to="/fightAnalyzer" className="sidebar-item">Fighter Analyzer</Link>
-                <div className="sidebar-item">Head to Head</div>
-                <div className="sidebar-item logout">Logout</div>
-            </div>
-
-            {/* Main Content */}
             <div className="main-content">
                 <h2 className="greeting">Hello, {user?.userName || user?.email}</h2>
 
-                {/* Chat Messages */}
                 <div className="chat-messages">
                     {messages.length === 0 ? (
                         <div className="welcome-message">
@@ -81,7 +70,9 @@ function Home({ user }) {
                         messages.map((msg, index) => (
                             <div key={index} className={`message ${msg.type}`}>
                                 <strong>{msg.type === 'user' ? 'You' : 'AI'}:</strong>
-                                <p>{msg.content}</p>
+                                {msg.type === 'ai'
+                                    ? <ReactMarkdown>{msg.content}</ReactMarkdown>
+                                    : <p>{msg.content}</p>}
                             </div>
                         ))
                     )}
@@ -96,7 +87,6 @@ function Home({ user }) {
                     <div ref={messagesEndRef} />
                 </div>
 
-                {/* Input Area */}
                 <div className="chat-input-area">
                     <div className="input-wrapper">
                         <input
@@ -113,7 +103,6 @@ function Home({ user }) {
                     </div>
                 </div>
             </div>
-
         </div>
     );
 }

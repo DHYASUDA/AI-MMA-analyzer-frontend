@@ -1,23 +1,24 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
-import './FightAnalyzer.css';
+import Sidebar from './Sidebar';
+import { apiUrl } from './config';
+import './fightAnalyzer.css';
 
 function initials(name) {
     return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
 }
 
-function FightAnalyzer() {
-    const [allFighters, setAllFighters]         = useState([]);
-    const [query, setQuery]                     = useState('');
+function FightAnalyzer({ onLogout }) {
+    const [allFighters, setAllFighters] = useState([]);
+    const [query, setQuery] = useState('');
     const [selectedFighter, setSelectedFighter] = useState(null);
-    const [fighterStats, setFighterStats]       = useState(null);
-    const [showDropdown, setShowDropdown]       = useState(false);
-    const [aiOverview, setAiOverview]           = useState('');
-    const [aiLoading, setAiLoading]             = useState(false);
+    const [fighterStats, setFighterStats] = useState(null);
+    const [showDropdown, setShowDropdown] = useState(false);
+    const [aiOverview, setAiOverview] = useState('');
+    const [aiLoading, setAiLoading] = useState(false);
     const wrapperRef = useRef(null);
 
     useEffect(() => {
-        fetch('http://localhost:8080/api/mma/getAllFighters')
+        fetch(apiUrl('/api/mma/getAllFighters'))
             .then(res => res.json())
             .then(data => setAllFighters(data));
     }, []);
@@ -50,30 +51,31 @@ function FightAnalyzer() {
               `Decision%: ${stats.CareerStats.DecisionPercentage ?? '?'}%`
             : 'Career stats unavailable';
 
-        const prompt =
-            `Give me a concise fighter breakdown for ${fighter.name}` +
-            (fighter.nickname ? ` "${fighter.nickname}"` : '') +
-            `. Weight class: ${stats.WeightClass ?? 'unknown'}. ` +
-            `Record: ${stats.Wins ?? 0}W-${stats.Losses ?? 0}L-${stats.Draws ?? 0}D. ` +
-            `TKO wins: ${stats.TechnicalKnockouts ?? 0}, Sub wins: ${stats.Submissions ?? 0}, Title wins: ${stats.TitleWins ?? 0}. ` +
-            `${careerLine}. ` +
-            `Cover their fighting style, key strengths, weaknesses, and a brief betting perspective. ` +
-            `Keep it to 3-4 short paragraphs. No asterisks or markdown formatting.` +
-            `If you mentioned "scrambled", ignore it and continue on. Never mentioned Scrambled`
-            ;
+        const prompt = [
+            `Give me a concise fighter breakdown for ${fighter.name}`,
+            fighter.nickname ? `"${fighter.nickname}"` : '',
+            `Weight class: ${stats.WeightClass ?? 'unknown'}.`,
+            `Record: ${stats.Wins ?? 0}W-${stats.Losses ?? 0}L-${stats.Draws ?? 0}D.`,
+            `TKO wins: ${stats.TechnicalKnockouts ?? 0}, Sub wins: ${stats.Submissions ?? 0}, Title wins: ${stats.TitleWins ?? 0}.`,
+            careerLine,
+            'Cover their fighting style, key strengths, weaknesses, and a brief betting perspective.',
+            'Keep it to 3-4 short paragraphs. No asterisks or markdown formatting.',
+        ].filter(Boolean).join(' ');
 
         try {
-            const response = await fetch('http://localhost:8080/ai/chat', {
+            const response = await fetch(apiUrl('/ai/chat'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'text/plain' },
-                body: prompt
+                body: prompt,
             });
 
-            if (!response.ok) throw new Error('AI request failed');
+            if (!response.ok) {
+                throw new Error('AI request failed');
+            }
 
             const text = await response.text();
             setAiOverview(text);
-        } catch (err) {
+        } catch {
             setAiOverview('Unable to generate AI overview at this time.');
         } finally {
             setAiLoading(false);
@@ -81,24 +83,17 @@ function FightAnalyzer() {
     };
 
     const selectFighter = (f) => {
-        console.log('fighter object:', f);
         setSelectedFighter(f);
-        setFighterStats(f);        
+        setFighterStats(f);
         setAiOverview('');
         setQuery('');
         setShowDropdown(false);
-        fetchAiOverview(f, f);     
+        fetchAiOverview(f, f);
     };
 
     return (
         <div className="analyzer-wrap">
-            <div className="sideBar">
-                <Link to="/home" className="sidebar-item">Home</Link>
-                <Link to="/upcomingfights" className="sidebar-item">Events</Link>
-                <div className="sidebar-item">Fighter Analyzer</div>
-                <div className="sidebar-item">Head to Head</div>
-                <div className="sidebar-item logout">Logout</div>
-            </div>
+            <Sidebar active="analyzer" onLogout={onLogout} />
 
             <div className="analyzer-content">
                 <div ref={wrapperRef}>
@@ -141,10 +136,7 @@ function FightAnalyzer() {
 
                 {selectedFighter && (
                     <div className="fighter-overview-layout">
-
-                        {/* ── Left: Stats card ── */}
                         <div className="stats-card">
-
                             <div className="selected-card">
                                 <div className="selected-avatar">{initials(selectedFighter.name)}</div>
                                 <div className="selected-info">
@@ -268,7 +260,6 @@ function FightAnalyzer() {
                             )}
                         </div>
 
-                        {/* ── Right: AI Overview ── */}
                         <div className="ai-overview-card">
                             <div className="ai-overview-header">
                                 <span className="ai-overview-badge">AI</span>
@@ -298,7 +289,6 @@ function FightAnalyzer() {
                                 <p className="ai-overview-empty">Select a fighter to see the AI breakdown.</p>
                             )}
                         </div>
-
                     </div>
                 )}
             </div>

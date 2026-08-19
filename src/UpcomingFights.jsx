@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import Sidebar from './Sidebar';
+import { apiUrl } from './config';
 import './UpcomingFights.css';
 
 const STAT_DEFS = [
@@ -13,7 +14,7 @@ const STAT_DEFS = [
     { label: 'Pre-fight odds',          key: 'PreFightOdds' },
 ];
 
-function FightCard({ fight, index }) {
+function FightCard({ fight }) {
     const [open, setOpen] = useState(false);
 
     const merged = (fight?.Fighters ?? []).map(f => {
@@ -80,46 +81,35 @@ function FightCard({ fight, index }) {
     );
 }
 
-function UpcomingFight() {
+function UpcomingFights({ onLogout }) {
     const [selectedYear, setSelectedYear] = useState('2026');
-    const [events, setEvents]             = useState([]);
+    const [events, setEvents] = useState([]);
     const [selectedEvent, setSelectedEvent] = useState('');
-    const [fights, setFights]             = useState([]);
+    const [fights, setFights] = useState([]);
 
-    // Re-fetch event list whenever year changes
     useEffect(() => {
-        setSelectedEvent('');
-        setFights([]);
-        fetch(`http://localhost:8080/api/mma/get2026Events?year=${selectedYear}`)
+        fetch(apiUrl(`/api/mma/get2026Events?year=${selectedYear}`))
             .then(res => res.json())
             .then(data => setEvents(data));
     }, [selectedYear]);
 
-    // Fetch fight details when an event is selected
     useEffect(() => {
         if (!selectedEvent) return;
-        fetch(`http://localhost:8080/api/mma/getFightDetails?eventName=${encodeURIComponent(selectedEvent)}&year=${selectedYear}`)
+        fetch(apiUrl(`/api/mma/getFightDetails?eventName=${encodeURIComponent(selectedEvent)}&year=${selectedYear}`))
             .then(res => res.json())
-            .then(data => {
-                console.log('fight[0]:', JSON.stringify(data[0], null, 2));
-                console.log('fighters:', data[0]?.Fighters);
-                setFights(data);
-            });
-    }, [selectedEvent]);
+            .then(data => setFights(data));
+    }, [selectedEvent, selectedYear]);
+
+    const handleYearChange = (e) => {
+        setSelectedYear(e.target.value);
+        setSelectedEvent('');
+        setFights([]);
+    };
 
     return (
         <div className="main">
+            <Sidebar active="events" onLogout={onLogout} />
 
-            {/* Sidebar */}
-            <div className="sideBar">
-                <Link to="/home" className="sidebar-item">Home</Link>
-                <Link to="/upcomingfights" className="sidebar-item">Events</Link>
-                <Link to="/fightAnalyzer" className="sidebar-item">Fighter Analyzer</Link>
-                <div className="sidebar-item">Head to Head</div>
-                <div className="sidebar-item logout">Logout</div>
-            </div>
-
-            {/* Main content */}
             <div className="fight-content">
                 <div className="fight-inner">
                     <div className="filterContainer">
@@ -128,10 +118,7 @@ function UpcomingFight() {
 
                         <div className="filter-year">
                             <label>Year: </label>
-                            <select
-                                value={selectedYear}
-                                onChange={e => setSelectedYear(e.target.value)}
-                            >
+                            <select value={selectedYear} onChange={handleYearChange}>
                                 <option value="2026">2026</option>
                                 <option value="2025">2025</option>
                             </select>
@@ -160,14 +147,13 @@ function UpcomingFight() {
                         )}
 
                         {fights.map((fight, i) => (
-                            <FightCard key={i} fight={fight} index={i} />
+                            <FightCard key={i} fight={fight} />
                         ))}
                     </div>
                 </div>
             </div>
-
         </div>
     );
 }
 
-export default UpcomingFight;
+export default UpcomingFights;

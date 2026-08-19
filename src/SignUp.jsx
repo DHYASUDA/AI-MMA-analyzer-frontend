@@ -1,129 +1,124 @@
-import { useState } from 'react'
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-function SignUp(){
-    const Navigate = useNavigate();
+import { apiUrl } from './config';
+
+function SignUp() {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         email: '',
         username: '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
     });
 
-    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
 
-
-    //handle change (being able to edit fields)
     const handleChange = (e) => {
         const { name, value } = e.target;
-        
-        setFormData(prevState => ({
-            ...prevState,        // keep previous values
-            [name]: value        // update the changed field
-        }));
+        setFormData(prev => ({ ...prev, [name]: value }));
     };
-
-
-
-    const testing = (e) => {
-        e.preventDefault();
-        console.log("Passwords do not match!");
-        const message = "Passwords do not match!"; 
-        fetch('http://localhost:8080/api/test', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(message)
-        })
-    };
-
-
 
     const handleSubmit = async (e) => {
-        e.preventDefault();     // Prevent page refresh
+        e.preventDefault();
+        setError('');
 
-        // Simple validation
         if (formData.password !== formData.confirmPassword) {
-            alert("Passwords do not match!");
+            setError('Passwords do not match.');
             return;
         }
 
         if (formData.password.length < 6) {
-            alert("Password must be at least 6 characters long");
+            setError('Password must be at least 6 characters long.');
             return;
         }
 
-        
-
-        // ==================== CREATE PAYLOAD ====================
-        // This is the data we will send to the backend
         const payload = {
-            email: formData.email.trim(),        // remove extra spaces
+            email: formData.email.trim(),
             username: formData.username.trim(),
-            password: formData.password
-            // We do NOT send confirmPassword to backend
+            password: formData.password,
         };
 
-        // For debugging - see what we are sending
-        console.log("Signup Payload:", payload);
+        setLoading(true);
 
-        try{
-
-            const response = await fetch('http://localhost:8080/api/signUp', {
+        try {
+            const response = await fetch(apiUrl('/api/signUp'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            })
+                body: JSON.stringify(payload),
+            });
 
-            alert("Success")
-            Navigate('/login');
-        } catch(error){
-            setError(error.message || "Something went wrong");
+            if (!response.ok) {
+                const data = await response.json().catch(() => ({}));
+                throw new Error(data.message || 'Sign up failed. Please try again.');
+            }
+
+            navigate('/login');
+        } catch (err) {
+            setError(err.message || 'Something went wrong');
+        } finally {
+            setLoading(false);
         }
-        
-
-        
     };
 
-
-
-    return(
-        <div>
+    return (
+        <div className="auth-page">
             <form onSubmit={handleSubmit}>
-                <label name="Email">Email: </label>
-                <input  type="email"
+                <h2>Sign Up</h2>
+                <label>
+                    Email
+                    <input
+                        type="email"
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
                         placeholder="Enter your email"
-                        required></input>
-                <br></br>
-                <label name="UserName">Username: </label>
-                <input  type="text"
-                        name="username"                    // Important: Add name
-                        value={formData.username}          // Add value
-                        onChange={handleChange}            // Add onChange
+                        required
+                    />
+                </label>
+                <label>
+                    Username
+                    <input
+                        type="text"
+                        name="username"
+                        value={formData.username}
+                        onChange={handleChange}
                         placeholder="Enter your username"
-                        required></input>
-                <br></br>
-                <label name="Password">Password:  </label>
-                <input  type="password"
-                        name="password"                    // Important: Add name
-                        value={formData.password}          // Add value
-                        onChange={handleChange}            // Add onChange
+                        required
+                    />
+                </label>
+                <label>
+                    Password
+                    <input
+                        type="password"
+                        name="password"
+                        value={formData.password}
+                        onChange={handleChange}
                         placeholder="Enter your password"
-                        required></input>
-                <br></br>
-                <label name="Confirmpassword">Confirm Password:  </label>
-                <input  type="password"
-                        name="confirmPassword"             // Important: Add name
-                        value={formData.confirmPassword}   // Add value
-                        onChange={handleChange}            // Add onChange
+                        required
+                    />
+                </label>
+                <label>
+                    Confirm Password
+                    <input
+                        type="password"
+                        name="confirmPassword"
+                        value={formData.confirmPassword}
+                        onChange={handleChange}
                         placeholder="Confirm your password"
-                        required></input>
-                <br></br>
-                <button type="submit">Sign Up</button>
+                        required
+                    />
+                </label>
+                {error && <p className="auth-error">{error}</p>}
+                <button type="submit" disabled={loading}>
+                    {loading ? 'Creating account…' : 'Sign Up'}
+                </button>
             </form>
-            <button type="submit" onClick={testing}>testing</button>
+            <button type="button" className="auth-link" onClick={() => navigate('/login')}>
+                Already have an account? Log in
+            </button>
         </div>
-    )
+    );
 }
+
 export default SignUp;

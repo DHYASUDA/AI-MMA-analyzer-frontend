@@ -1,100 +1,64 @@
-import { useState } from 'react'
+import { useState } from 'react';
 import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
-import axios from 'axios';
-import './App.css'
+import './App.css';
 import SignUp from './SignUp';
 import Login from './Login';
 import Home from './Home';
-import UpcomingFights from './UpcomingFights'
-import FightAnalyzer from './FightAnalyzer'
+import UpcomingFights from './UpcomingFights';
+import FightAnalyzer from './fightAnalyzer';
+import { getStoredUser, storeUser, clearStoredUser } from './auth';
 
 function App() {
-  const navigate = useNavigate();
-  const [user, setUser] = useState(null);
-  const[formData, setFormData] = useState({
-    userName: '',
-    password: ''
-  });
-  
-  const handleLoginSuccess = (userData) => {
-    setUser(userData);
-};
-  const handleChange = (e) => {
-    setFormData({
-     ...formData,                    
-      [e.target.name]: e.target.value 
-    });
-  };
+    const navigate = useNavigate();
+    const [user, setUser] = useState(() => getStoredUser());
 
-  
-const handleSubmit = async (e) => {
-  e.preventDefault();//prevents reload when submit
-  
+    const handleLoginSuccess = (userData) => {
+        const safeUser = storeUser(userData);
+        setUser(safeUser);
+    };
 
-  try {
-    const response = await axios.post('/api/submit', formData);
-    console.log(response.data);
-  } catch (error) {
-    console.error('Login request failed:', error);
-  }
+    const handleLogout = () => {
+        clearStoredUser();
+        setUser(null);
+        navigate('/login');
+    };
+
+    const requireAuth = (element) =>
+        user ? element : <Navigate to="/login" replace />;
+
+    return (
+        <Routes>
+            <Route
+                path="/"
+                element={
+                    user
+                        ? <Navigate to="/home" replace />
+                        : (
+                            <div className="landing">
+                                <h1>MMA Fight Hub</h1>
+                                <div className="landing-actions">
+                                    <button onClick={() => navigate('/login')}>Login</button>
+                                    <button onClick={() => navigate('/signup')}>Sign up</button>
+                                </div>
+                            </div>
+                        )
+                }
+            />
+            <Route path="/signup" element={<SignUp />} />
+            <Route
+                path="/login"
+                element={
+                    user
+                        ? <Navigate to="/home" replace />
+                        : <Login onLoginSuccess={handleLoginSuccess} />
+                }
+            />
+            <Route path="/home" element={requireAuth(<Home user={user} onLogout={handleLogout} />)} />
+            <Route path="/upcomingfights" element={requireAuth(<UpcomingFights user={user} onLogout={handleLogout} />)} />
+            <Route path="/fightAnalyzer" element={requireAuth(<FightAnalyzer user={user} onLogout={handleLogout} />)} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+    );
 }
 
-const goToSignUp = () => {
-  navigate('/signup')
-}
-
-const goToLogin = () => {
-  navigate('/login')
-}
-
-
-  return (
-    
-    <div>
-      
-        
-      <div>
-           
-        
-        
-      </div>
-      <Routes>
-      <Route
-        path="/"
-        element={
-          <div>
-            
-              <button onClick={goToLogin}>Login</button>
-              <button onClick={goToSignUp}>Sign up</button>
-            </div>
-          
-        }
-      />
-      
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />}  />
-        <Route 
-          path="/home" 
-          element={
-            user ? <Home user={user} /> : <Navigate to="/login" replace />
-          } 
-        />
-        <Route 
-          path="/upcomingfights" 
-          element={
-            user ? <UpcomingFights user={user} /> : <Navigate to="./UpcomingFights" replace />
-          } 
-        />
-
-<Route 
-  path="/fightAnalyzer" 
-  element={
-    user ? <FightAnalyzer user={user} /> : <Navigate to="/login" replace />
-  } 
-/>
-      </Routes>
-    </div>
-  )
-} 
-
-export default App
+export default App;
