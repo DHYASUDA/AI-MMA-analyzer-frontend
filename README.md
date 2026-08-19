@@ -1,3 +1,4 @@
+Backend (Springboot) https://github.com/DHYASUDA/AI-powered-MMA-analyzer/tree/main
 # MMA Fight Hub
 
 A React frontend for exploring UFC events, analyzing fighters, and chatting with an AI assistant. Built with Vite and React Router, it connects to a Java/Spring backend on port 8080.
@@ -101,28 +102,4 @@ fetch(`${API}/api/login`, { ... });
 
 > **Note:** Vite's dev-server proxy in `vite.config.js` only applies during `npm run dev`. It does not affect the production build.
 
-## Deployment Checklist
 
-Before going public, address these items:
-
-- [ ] Replace all `localhost:8080` URLs with `VITE_API_BASE_URL`
-- [ ] Persist auth (JWT in httpOnly cookie or secure localStorage) so sessions survive refresh
-- [ ] Remove debug code (`console.log`, `alert`, SignUp "testing" button)
-- [ ] Stop storing passwords in client-side user state after login
-- [ ] Wire up Logout buttons and fix route guard on `/upcomingfights`
-- [ ] Fix SignUp → Login navigation (`/signUp` vs `/signup` casing)
-- [ ] Add a 404 route and update `index.html` title/branding
-- [ ] Enable HTTPS and configure CORS on the backend
-- [ ] Resolve ESLint errors (`npm run lint`)
-- [ ] Set `"private": false` in `package.json` if publishing to npm (optional for app deploys)
-
-## Known Limitations
-
-- Auth state lives in React memory only — refreshing the page logs the user out
-- No error boundaries or global error handling
-- `HeadToHead.jsx` is an empty placeholder
-- Some UI uses `alert()` instead of inline error messages
-
-## License
-
-Private project — add a license if you plan to open-source it.
